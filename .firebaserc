@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "rich-phenomenon-268418"
+    "default": "rich-phenomenon-268418",
+    "staging": "rich-phenomenon-268418"
   }
 }
