@@ -21,6 +21,8 @@ var messageForm = document.getElementById('message-form');
 var messageInput = document.getElementById('new-post-message');
 var titleInput = document.getElementById('new-post-title');
 var signInButton = document.getElementById('sign-in-button');
+var signInAnonButton = document.getElementById('sign-in-anon-button');
+
 var signOutButton = document.getElementById('sign-out-button');
 var splashPage = document.getElementById('page-splash');
 var addPost = document.getElementById('add-post');
@@ -351,7 +353,12 @@ function onAuthStateChanged(user) {
   if (user) {
     currentUID = user.uid;
     splashPage.style.display = 'none';
-    writeUserData(user.uid, user.displayName, user.email, user.photoURL);
+    try {
+      writeUserData(user.uid, user.displayName, user.email, user.photoURL);
+    }
+    catch(err) {
+      var isAnonymous = user.isAnonymous;
+    }
     startDatabaseQueries();
   } else {
     // Set currentUID to null.
@@ -404,6 +411,15 @@ window.addEventListener('load', function() {
   signInButton.addEventListener('click', function() {
     var provider = new firebase.auth.GoogleAuthProvider();
     firebase.auth().signInWithPopup(provider);
+  });
+
+  signInAnonButton.addEventListener('click', function() {
+    firebase.auth().signInAnonymously().catch(function(error) {
+      // Handle Errors here.
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      // ...
+    });
   });
 
   // Bind Sign out button.

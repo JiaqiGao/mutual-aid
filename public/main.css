@@ -79,6 +79,9 @@ h3 {
     margin: auto;
     position: relative;
 }
+.pad {
+    padding: 10px;
+}
 @media screen and (max-width: 840px) {
     .header .mdl-layout__header-row.titlebar {
         height: 56px;
