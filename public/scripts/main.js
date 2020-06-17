@@ -30,9 +30,13 @@ var addButton = document.getElementById('add');
 var recentPostsSection = document.getElementById('recent-posts-list');
 var userPostsSection = document.getElementById('user-posts-list');
 var topUserPostsSection = document.getElementById('top-user-posts-list');
-var recentMenuButton = document.getElementById('menu-recent');
+var givesMenuButton = document.getElementById('menu-gives');
 var myPostsMenuButton = document.getElementById('menu-my-posts');
 var myTopPostsMenuButton = document.getElementById('menu-my-top-posts');
+
+var giveToggle = document.getElementById('give-toggle');
+var askToggle = document.getElementById('ask-toggle');
+
 var listeningFirebaseRefs = [];
 
 /**
@@ -85,14 +89,8 @@ function toggleStar(postRef, uid) {
 }
 // [END post_stars_transaction]
 
-/**
- * Creates a post element.
- */
-function createPostElement(postId, title, text, author, authorId, authorPic) {
-  var uid = firebase.auth().currentUser.uid;
-
-  var html =
-      '<div class="post post-' + postId + ' mdl-cell mdl-cell--12-col ' +
+function postTemplate(postId) {
+  var html = '<div class="post post-' + postId + ' mdl-cell mdl-cell--12-col ' +
                   'mdl-cell--6-col-tablet mdl-cell--4-col-desktop mdl-grid mdl-grid--no-spacing">' +
         '<div class="mdl-card mdl-shadow--2dp">' +
           '<div class="mdl-card__title mdl-color--light-blue-600 mdl-color-text--white">' +
@@ -119,6 +117,17 @@ function createPostElement(postId, title, text, author, authorId, authorPic) {
           '</form>' +
         '</div>' +
       '</div>';
+  return html;
+}
+
+/**
+ * Creates a post element.
+ */
+function createPostElement(postId, title, text, author, authorId, authorPic) {
+  var uid = firebase.auth().currentUser.uid;
+
+  var html = postTemplate(postId);
+      
 
   // Create the DOM element from the HTML.
   var div = document.createElement('div');
@@ -393,9 +402,28 @@ function showSection(sectionElement, buttonElement) {
   userPostsSection.style.display = 'none';
   topUserPostsSection.style.display = 'none';
   addPost.style.display = 'none';
-  recentMenuButton.classList.remove('is-active');
+  givesMenuButton.classList.remove('is-active');
   myPostsMenuButton.classList.remove('is-active');
   myTopPostsMenuButton.classList.remove('is-active');
+
+  giveToggle.onclick = function() {
+    if (giveToggle.classList.contains('mdl-button--disabled') == true) {
+      // askgive.value = 'give';
+      giveToggle.classList.remove('mdl-button--disabled');
+      giveToggle.classList.add('toggle-on');
+      askToggle.classList.add('mdl-button--disabled');
+    }
+      
+  }
+  askToggle.onclick = function() {
+    if (askToggle.classList.contains('mdl-button--disabled') == true) {
+      // askgive.value = 'ask';
+      askToggle.classList.remove('mdl-button--disabled');
+      askToggle.classList.add('toggle-on');
+      giveToggle.classList.add('mdl-button--disabled');
+    }
+      
+  }
 
   if (sectionElement) {
     sectionElement.style.display = 'block';
@@ -445,8 +473,8 @@ window.addEventListener('load', function() {
   };
 
   // Bind menu buttons.
-  recentMenuButton.onclick = function() {
-    showSection(recentPostsSection, recentMenuButton);
+  givesMenuButton.onclick = function() {
+    showSection(recentPostsSection, givesMenuButton);
   };
   myPostsMenuButton.onclick = function() {
     showSection(userPostsSection, myPostsMenuButton);
@@ -459,5 +487,5 @@ window.addEventListener('load', function() {
     messageInput.value = '';
     titleInput.value = '';
   };
-  recentMenuButton.onclick();
+  givesMenuButton.onclick();
 }, false);

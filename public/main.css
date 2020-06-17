@@ -136,6 +136,10 @@ h3 {
 .mdl-button .material-icons {
     margin-top: -2px;
 }
+.toggle-on {
+    background-color: green;
+    color: white;
+}
 .mdl-button.mdl-button--icon .material-icons,
 .mdl-button.mdl-button--fab .material-icons {
     margin-top: 0;

@@ -72,8 +72,11 @@
     <!-- Navigation Bar -->
     <div class="tab mdl-layout__header-row mdl-color--light-blue-600">
       <div class="mdl-tab">
-        <div id="menu-recent" class="mdl-layout__tab is-active mdl-button mdl-js-button mdl-js-ripple-effect">
-          <i class="material-icons">new_releases</i> Recent
+        <div id="menu-gives" class="mdl-layout__tab is-active mdl-button mdl-js-button mdl-js-ripple-effect">
+          <i class="material-icons">pan_tool</i> Gives
+        </div>
+        <div id="menu-asks" class="mdl-layout__tab mdl-button mdl-js-button mdl-js-ripple-effect">
+          <i class="material-icons">accessibility_new</i> Asks
         </div>
         <div id="menu-my-posts" class="mdl-layout__tab mdl-button mdl-js-button mdl-js-ripple-effect">
           <i class="material-icons">home</i> My posts
@@ -102,6 +105,12 @@
             </div>
             <div class="mdl-card__supporting-text mdl-color-text--grey-600">
               <form id="message-form" action="#">
+                <button id="give-toggle" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect toggle-on">
+                  Give
+                  </button>
+                  <button id="ask-toggle" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--disabled">
+                  Ask
+                  </button>
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                   <input class="mdl-textfield__input" type="text" id="new-post-title">
                   <label class="mdl-textfield__label" for="new-post-title">Post title...</label>
