@@ -334,6 +334,7 @@ function cleanupUi() {
   listeningFirebaseRefs = [];
 }
 
+
 /**
  * The ID of the currently signed-in User. We keep track of this to detect Auth state change events that are just
  * programmatic token refresh but not a User status change.
@@ -359,6 +360,47 @@ function onAuthStateChanged(user) {
     catch(err) {
       var isAnonymous = user.isAnonymous;
     }
+
+    // load Google Maps API once user has logged in
+    var script = document.createElement('script');
+    script.src = 'https://maps.googleapis.com/maps/api/js?key=' + config.maps_key + '&callback=getUserLocation';
+    script.defer = true;
+    script.async = true;
+
+    window.getUserLocation = function(){
+      function success(position){
+        var geocoder = new google.maps.Geocoder();
+        var latlng = {lat: position.coords.latitude, lng: position.coords.longitude};
+        try{
+          geocoder.geocode({'location': latlng}, function(results, status){
+            if (status == 'OK'){
+              if (results[0]){
+                results[0].address_components.forEach(function(item, index){
+                  if (item.types[0] == 'postal_code'){
+                    console.log(item.long_name);
+                  }
+                });
+              }
+            }
+          });
+        }
+        catch (err){
+          console.log(err);
+        }
+      }
+      function error(){
+        console.log('unable to retrieve location');
+      }
+      if (navigator.geolocation){
+        navigator.geolocation.getCurrentPosition(success, error);
+      } else {
+        console.log('Browser does not support geolocation');
+      }
+    
+    }
+
+    document.head.appendChild(script);
+
     startDatabaseQueries();
   } else {
     // Set currentUID to null.
