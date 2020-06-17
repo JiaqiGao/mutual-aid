@@ -43,7 +43,7 @@ var listeningFirebaseRefs = [];
  * Saves a new post to the Firebase DB.
  */
 // [START write_fan_out]
-function writeNewPost(uid, username, picture, title, body) {
+function writeNewPost(uid, username, picture, title, body, type) {
   // A post entry.
   var postData = {
     author: username,
@@ -51,7 +51,8 @@ function writeNewPost(uid, username, picture, title, body) {
     body: body,
     title: title,
     starCount: 0,
-    authorPic: picture
+    authorPic: picture,
+    type: type,
   };
 
   // Get a key for a new Post.
@@ -276,7 +277,7 @@ function startDatabaseQueries() {
   var topUserPostsRef = firebase.database().ref('user-posts/' + myUserId).orderByChild('starCount');
   // [END my_top_posts_query]
   // [START recent_posts_query]
-  var recentPostsRef = firebase.database().ref('posts').limitToLast(100);
+  var recentPostsRef = firebase.database().ref('posts').orderByChild("type").equalTo("give");
   // [END recent_posts_query]
   var userPostsRef = firebase.database().ref('user-posts/' + myUserId);
 
@@ -380,7 +381,7 @@ function onAuthStateChanged(user) {
 /**
  * Creates a new post for the current user.
  */
-function newPostForCurrentUser(title, text) {
+function newPostForCurrentUser(title, text, askgive) {
   // [START single_value_read]
   var userId = firebase.auth().currentUser.uid;
   return firebase.database().ref('/users/' + userId).once('value').then(function(snapshot) {
@@ -388,7 +389,7 @@ function newPostForCurrentUser(title, text) {
     // [START_EXCLUDE]
     return writeNewPost(firebase.auth().currentUser.uid, username,
       firebase.auth().currentUser.photoURL,
-      title, text);
+      title, text, askgive);
     // [END_EXCLUDE]
   });
   // [END single_value_read]
@@ -405,10 +406,11 @@ function showSection(sectionElement, buttonElement) {
   givesMenuButton.classList.remove('is-active');
   myPostsMenuButton.classList.remove('is-active');
   myTopPostsMenuButton.classList.remove('is-active');
+  var askgive = 'give';
 
   giveToggle.onclick = function() {
     if (giveToggle.classList.contains('mdl-button--disabled') == true) {
-      // askgive.value = 'give';
+      askgive = 'give';
       giveToggle.classList.remove('mdl-button--disabled');
       giveToggle.classList.add('toggle-on');
       askToggle.classList.add('mdl-button--disabled');
@@ -417,12 +419,11 @@ function showSection(sectionElement, buttonElement) {
   }
   askToggle.onclick = function() {
     if (askToggle.classList.contains('mdl-button--disabled') == true) {
-      // askgive.value = 'ask';
+      askgive = 'ask';
       askToggle.classList.remove('mdl-button--disabled');
       askToggle.classList.add('toggle-on');
       giveToggle.classList.add('mdl-button--disabled');
     }
-      
   }
 
   if (sectionElement) {
@@ -463,8 +464,9 @@ window.addEventListener('load', function() {
     e.preventDefault();
     var text = messageInput.value;
     var title = titleInput.value;
+    var askgive = 'give';
     if (text && title) {
-      newPostForCurrentUser(title, text).then(function() {
+      newPostForCurrentUser(title, text, askgive).then(function() {
         myPostsMenuButton.click();
       });
       messageInput.value = '';
