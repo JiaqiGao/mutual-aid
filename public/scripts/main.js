@@ -54,7 +54,7 @@ function writeNewPost(uid, username, picture, title, body, type) {
     authorPic: picture,
     type: type,
   };
-
+  
   // Get a key for a new Post.
   var newPostKey = firebase.database().ref().child('posts').push().key;
 
@@ -129,7 +129,6 @@ function createPostElement(postId, title, text, author, authorId, authorPic) {
 
   var html = postTemplate(postId);
       
-
   // Create the DOM element from the HTML.
   var div = document.createElement('div');
   div.innerHTML = html;
@@ -306,7 +305,7 @@ function startDatabaseQueries() {
 
   // Fetching and displaying all posts of each sections.
   fetchPosts(topUserPostsRef, topUserPostsSection);
-  fetchPosts(recentPostsRef, recentPostsSection);
+  fetchPosts(recentPostsRef, recentPostsSection);  // givePostsSection
   fetchPosts(userPostsRef, userPostsSection);
 
   // Keep track of all Firebase refs we are listening to.
@@ -387,6 +386,7 @@ function newPostForCurrentUser(title, text, askgive) {
   return firebase.database().ref('/users/' + userId).once('value').then(function(snapshot) {
     var username = (snapshot.val() && snapshot.val().username) || 'Anonymous';
     // [START_EXCLUDE]
+    console.log(askgive);
     return writeNewPost(firebase.auth().currentUser.uid, username,
       firebase.auth().currentUser.photoURL,
       title, text, askgive);
@@ -406,25 +406,6 @@ function showSection(sectionElement, buttonElement) {
   givesMenuButton.classList.remove('is-active');
   myPostsMenuButton.classList.remove('is-active');
   myTopPostsMenuButton.classList.remove('is-active');
-  var askgive = 'give';
-
-  giveToggle.onclick = function() {
-    if (giveToggle.classList.contains('mdl-button--disabled') == true) {
-      askgive = 'give';
-      giveToggle.classList.remove('mdl-button--disabled');
-      giveToggle.classList.add('toggle-on');
-      askToggle.classList.add('mdl-button--disabled');
-    }
-      
-  }
-  askToggle.onclick = function() {
-    if (askToggle.classList.contains('mdl-button--disabled') == true) {
-      askgive = 'ask';
-      askToggle.classList.remove('mdl-button--disabled');
-      askToggle.classList.add('toggle-on');
-      giveToggle.classList.add('mdl-button--disabled');
-    }
-  }
 
   if (sectionElement) {
     sectionElement.style.display = 'block';
@@ -459,12 +440,31 @@ window.addEventListener('load', function() {
   // Listen for auth state changes
   firebase.auth().onAuthStateChanged(onAuthStateChanged);
 
+  var askgive = 'give';
+
+  giveToggle.onclick = function() {
+    if (giveToggle.classList.contains('mdl-button--disabled') == true) {
+      askgive = 'give';
+      giveToggle.classList.remove('mdl-button--disabled');
+      giveToggle.classList.add('toggle-on');
+      askToggle.classList.add('mdl-button--disabled');
+    }
+      
+  }
+  askToggle.onclick = function() {
+    if (askToggle.classList.contains('mdl-button--disabled') == true) {
+      askgive = 'ask';
+      askToggle.classList.remove('mdl-button--disabled');
+      askToggle.classList.add('toggle-on');
+      giveToggle.classList.add('mdl-button--disabled');
+    }
+  }
+
   // Saves message on form submit.
   messageForm.onsubmit = function(e) {
     e.preventDefault();
     var text = messageInput.value;
     var title = titleInput.value;
-    var askgive = 'give';
     if (text && title) {
       newPostForCurrentUser(title, text, askgive).then(function() {
         myPostsMenuButton.click();
