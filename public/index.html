@@ -17,20 +17,20 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="description" content="Demonstrates the use of Google Cloud Database with a Firebase DB">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mutual Aid Real-Time Notifs</title>
+  <title>Mutual Aid Giving</title>
 
   <!-- Disable tap highlight on IE -->
   <meta name="msapplication-tap-highlight" content="no">
 
   <!-- Add to homescreen for Chrome on Android -->
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="application-name" content="Firebase Database Quickstart">
+  <meta name="application-name" content="Mutual Aid Giving">
   <meta name="theme-color" content="#303F9F">
 
   <!-- Add to homescreen for Safari on iOS -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Firebase Database Quickstart">
+  <meta name="apple-mobile-web-app-title" content="Mutual Aid Giving">
   <meta name="apple-mobile-web-app-status-bar-style" content="#303F9F">
 
   <!-- Tile icon for Win8 -->
@@ -65,7 +65,7 @@
   <header class="header mdl-layout__header mdl-color-text--white mdl-color--light-blue-700">
 
     <div class="mdl-layout__header-row titlebar">
-      <h3 class="logo">Mutual Aid Sign-In</h3>
+      <h3 class="logo">Mutual Aid Giving</h3>
       <button id="sign-out-button" class="mdl-button--raised mdl-button mdl-js-button mdl-js-ripple-effect"><i class="material-icons">account_circle</i> Sign out</button>
     </div>
 
@@ -84,9 +84,9 @@
         <div id="menu-my-posts" class="mdl-layout__tab mdl-button mdl-js-button mdl-js-ripple-effect">
           <i class="material-icons">inbox</i> Inbox
         </div>
-        <div id="menu-my-top-posts" class="mdl-layout__tab mdl-button mdl-js-button mdl-js-ripple-effect">
+        <!-- <div id="menu-my-top-posts" class="mdl-layout__tab mdl-button mdl-js-button mdl-js-ripple-effect">
           <i class="material-icons">star</i> Saved posts
-        </div>
+        </div> -->
         <button class="mdl-button mdl-js-button mdl-button--fab mdl-color--amber-400 mdl-shadow--4dp mdl-js-ripple-effect" id="add">
           <i class="material-icons">mode_edit</i>
         </button>
@@ -131,8 +131,14 @@
       </div>
     </section>
 
-    <!-- Show a list of recent posts -->
-    <section class="mdl-grid content" id="recent-posts-list" style="display:none">
+    <!-- Show a list of gives posts -->
+    <section class="mdl-grid content" id="gives-posts-list" style="display:none">
+      <div class="posts-container mdl-cell mdl-cell--12-col mdl-grid">
+      </div>
+    </section>
+
+    <!-- Show a list of asks posts -->
+    <section class="mdl-grid content" id="asks-posts-list" style="display:none">
       <div class="posts-container mdl-cell mdl-cell--12-col mdl-grid">
       </div>
     </section>

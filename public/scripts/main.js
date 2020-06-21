@@ -27,12 +27,16 @@ var signOutButton = document.getElementById('sign-out-button');
 var splashPage = document.getElementById('page-splash');
 var addPost = document.getElementById('add-post');
 var addButton = document.getElementById('add');
-var recentPostsSection = document.getElementById('recent-posts-list');
+var givesPostsSection = document.getElementById('gives-posts-list');
+var asksPostsSection = document.getElementById('asks-posts-list');
 var userPostsSection = document.getElementById('user-posts-list');
 var topUserPostsSection = document.getElementById('top-user-posts-list');
+
 var givesMenuButton = document.getElementById('menu-gives');
+var asksMenuButton = document.getElementById('menu-asks');
+
 var myPostsMenuButton = document.getElementById('menu-my-posts');
-var myTopPostsMenuButton = document.getElementById('menu-my-top-posts');
+// var myTopPostsMenuButton = document.getElementById('menu-my-top-posts');
 
 var giveToggle = document.getElementById('give-toggle');
 var askToggle = document.getElementById('ask-toggle');
@@ -93,14 +97,8 @@ function toggleStar(postRef, uid) {
 /**
  * Deletes the given postElement.
  */
-function deletePost(postRef, uid) {
+function deletePost(postRef) {
   postRef.remove();
-  // postRef.transaction(function(post) {
-  //   if (post) {
-  //     post.delete();
-  //   }
-  //   // return post;
-  // });
 }
 
 
@@ -187,10 +185,10 @@ function createPostElement(postId, title, text, author, authorId, authorPic, com
 
   // Listen for likes counts.
   // [START post_value_event_listener]
-  var starCountRef = firebase.database().ref('posts/' + postId + '/starCount');
-  starCountRef.on('value', function(snapshot) {
-    updateStarCount(postElement, snapshot.val());
-  });
+  // var starCountRef = firebase.database().ref('posts/' + postId + '/starCount');
+  // starCountRef.on('value', function(snapshot) {
+  //   updateStarCount(postElement, snapshot.val());
+  // });
   // [END post_value_event_listener]
 
   // Listen for the starred status.
@@ -201,7 +199,7 @@ function createPostElement(postId, title, text, author, authorId, authorPic, com
 
   // Keep track of all Firebase reference on which we are listening.
   listeningFirebaseRefs.push(commentsRef);
-  listeningFirebaseRefs.push(starCountRef);
+  // listeningFirebaseRefs.push(starCountRef);
   listeningFirebaseRefs.push(starredStatusRef);
 
   // Create new comment.
@@ -226,8 +224,8 @@ function createPostElement(postId, title, text, author, authorId, authorPic, com
   var onTrashClicked = function() {
     var globalPostRef = firebase.database().ref('/posts/' + postId);
     var userPostRef = firebase.database().ref('/user-posts/' + authorId + '/' + postId);
-    deletePost(globalPostRef, uid);
-    deletePost(userPostRef, uid);
+    deletePost(globalPostRef);
+    deletePost(userPostRef);
   };
   if (trash) {
     trash.onclick = onTrashClicked;
@@ -305,10 +303,12 @@ function deleteComment(postElement, id) {
 function startDatabaseQueries() {
   // [START my_top_posts_query]
   var myUserId = firebase.auth().currentUser.uid;
-  var topUserPostsRef = firebase.database().ref('user-posts/' + myUserId).orderByChild('starCount');
+  // var topUserPostsRef = firebase.database().ref('user-posts/' + myUserId).orderByChild('starCount');
   // [END my_top_posts_query]
   // [START recent_posts_query]
-  var recentPostsRef = firebase.database().ref('posts').orderByChild("type").equalTo("give");
+  var givesPostsRef = firebase.database().ref('posts').orderByChild("type").equalTo("give");
+  var asksPostsRef = firebase.database().ref('posts').orderByChild("type").equalTo("ask");
+
   // [END recent_posts_query]
   var userPostsRef = firebase.database().ref('user-posts/' + myUserId);
 
@@ -326,7 +326,7 @@ function startDatabaseQueries() {
       postElement.getElementsByClassName('mdl-card__title-text')[0].innerText = data.val().title;
       postElement.getElementsByClassName('username')[0].innerText = data.val().author;
       postElement.getElementsByClassName('text')[0].innerText = data.val().body;
-      postElement.getElementsByClassName('star-count')[0].innerText = data.val().starCount;
+      // postElement.getElementsByClassName('star-count')[0].innerText = data.val().starCount;
     });
     postsRef.on('child_removed', function(data) {
       var containerElement = sectionElement.getElementsByClassName('posts-container')[0];
@@ -336,13 +336,15 @@ function startDatabaseQueries() {
   };
 
   // Fetching and displaying all posts of each sections.
-  fetchPosts(topUserPostsRef, topUserPostsSection, false);
-  fetchPosts(recentPostsRef, recentPostsSection, false);  // givePostsSection
+  // fetchPosts(topUserPostsRef, topUserPostsSection, false);
+  fetchPosts(givesPostsRef, givesPostsSection, false);  
+  fetchPosts(asksPostsRef, asksPostsSection, false);  
   fetchPosts(userPostsRef, userPostsSection, true);
 
   // Keep track of all Firebase refs we are listening to.
-  listeningFirebaseRefs.push(topUserPostsRef);
-  listeningFirebaseRefs.push(recentPostsRef);
+  // listeningFirebaseRefs.push(topUserPostsRef);
+  listeningFirebaseRefs.push(givesPostsRef);
+  listeningFirebaseRefs.push(asksPostsRef);
   listeningFirebaseRefs.push(userPostsRef);
 }
 
@@ -365,7 +367,7 @@ function writeUserData(userId, name, email, imageUrl) {
 function cleanupUi() {
   // Remove all previously displayed posts.
   topUserPostsSection.getElementsByClassName('posts-container')[0].innerHTML = '';
-  recentPostsSection.getElementsByClassName('posts-container')[0].innerHTML = '';
+  givesPostsSection.getElementsByClassName('posts-container')[0].innerHTML = '';
   userPostsSection.getElementsByClassName('posts-container')[0].innerHTML = '';
 
   // Stop all currently listening Firebase listeners.
@@ -431,13 +433,16 @@ function newPostForCurrentUser(title, text, askgive) {
  * Displays the given section element and changes styling of the given button.
  */
 function showSection(sectionElement, buttonElement) {
-  recentPostsSection.style.display = 'none';
+  givesPostsSection.style.display = 'none';
+  asksPostsSection.style.display = 'none';
+
   userPostsSection.style.display = 'none';
   topUserPostsSection.style.display = 'none';
   addPost.style.display = 'none';
   givesMenuButton.classList.remove('is-active');
+  asksMenuButton.classList.remove('is-active');
   myPostsMenuButton.classList.remove('is-active');
-  myTopPostsMenuButton.classList.remove('is-active');
+  // myTopPostsMenuButton.classList.remove('is-active');
 
   if (sectionElement) {
     sectionElement.style.display = 'block';
@@ -508,18 +513,22 @@ window.addEventListener('load', function() {
 
   // Bind menu buttons.
   givesMenuButton.onclick = function() {
-    showSection(recentPostsSection, givesMenuButton);
+    showSection(givesPostsSection, givesMenuButton);
+  };
+  asksMenuButton.onclick = function() {
+    showSection(asksPostsSection, asksMenuButton);
   };
   myPostsMenuButton.onclick = function() {
     showSection(userPostsSection, myPostsMenuButton);
   };
-  myTopPostsMenuButton.onclick = function() {
-    showSection(topUserPostsSection, myTopPostsMenuButton);
-  };
+  // myTopPostsMenuButton.onclick = function() {
+  //   showSection(topUserPostsSection, myTopPostsMenuButton);
+  // };
   addButton.onclick = function() {
     showSection(addPost);
     messageInput.value = '';
     titleInput.value = '';
   };
   givesMenuButton.onclick();
+  asksMenuButton.onclick();
 }, false);
