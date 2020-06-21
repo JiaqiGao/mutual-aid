@@ -90,7 +90,21 @@ function toggleStar(postRef, uid) {
 }
 // [END post_stars_transaction]
 
-function postTemplate(postId) {
+/**
+ * Deletes the given postElement.
+ */
+function deletePost(postRef, uid) {
+  postRef.remove();
+  // postRef.transaction(function(post) {
+  //   if (post) {
+  //     post.delete();
+  //   }
+  //   // return post;
+  // });
+}
+
+
+function postTemplate(postId, isUser) {
   var html = '<div class="post post-' + postId + ' mdl-cell mdl-cell--12-col ' +
                   'mdl-cell--6-col-tablet mdl-cell--4-col-desktop mdl-grid mdl-grid--no-spacing">' +
         '<div class="mdl-card mdl-shadow--2dp">' +
@@ -103,17 +117,20 @@ function postTemplate(postId) {
               '<div class="username mdl-color-text--black"></div>' +
             '</div>' +
           '</div>' +
-          '<span class="star">' +
-            '<div class="not-starred material-icons">star_border</div>' +
+          '<span class="star">';
+    // Add the delete button
+    if (isUser) {
+      html += '<div class="delete-post material-icons">delete</div>';
+    }
+    html += '<div class="not-starred material-icons">star_border</div>' +
             '<div class="starred material-icons">star</div>' +
-            '<div class="star-count">0</div>' +
           '</span>' +
           '<div class="text"></div>' +
           '<div class="comments-container"></div>' +
           '<form class="add-comment" action="#">' +
             '<div class="mdl-textfield mdl-js-textfield">' +
               '<input class="mdl-textfield__input new-comment" type="text">' +
-              '<label class="mdl-textfield__label">Comment...</label>' +
+              '<label class="mdl-textfield__label">Respond to post...</label>' +
             '</div>' +
           '</form>' +
         '</div>' +
@@ -124,10 +141,10 @@ function postTemplate(postId) {
 /**
  * Creates a post element.
  */
-function createPostElement(postId, title, text, author, authorId, authorPic) {
+function createPostElement(postId, title, text, author, authorId, authorPic, commentsEnabled) {
   var uid = firebase.auth().currentUser.uid;
 
-  var html = postTemplate(postId);
+  var html = postTemplate(postId, commentsEnabled);
       
   // Create the DOM element from the HTML.
   var div = document.createElement('div');
@@ -141,6 +158,7 @@ function createPostElement(postId, title, text, author, authorId, authorPic) {
   var commentInput = postElement.getElementsByClassName('new-comment')[0];
   var star = postElement.getElementsByClassName('starred')[0];
   var unStar = postElement.getElementsByClassName('not-starred')[0];
+  var trash = postElement.getElementsByClassName('delete-post')[0];
 
   // Set values.
   postElement.getElementsByClassName('text')[0].innerText = text;
@@ -152,9 +170,11 @@ function createPostElement(postId, title, text, author, authorId, authorPic) {
   // Listen for comments.
   // [START child_event_listener_recycler]
   var commentsRef = firebase.database().ref('post-comments/' + postId);
-  commentsRef.on('child_added', function(data) {
-    addCommentElement(postElement, data.key, data.val().text, data.val().author);
-  });
+  if (commentsEnabled) {
+    commentsRef.on('child_added', function(data) {
+      addCommentElement(postElement, data.key, data.val().text, data.val().author);
+    });
+  }
 
   commentsRef.on('child_changed', function(data) {
     setCommentValues(postElement, data.key, data.val().text, data.val().author);
@@ -201,6 +221,17 @@ function createPostElement(postId, title, text, author, authorId, authorPic) {
   };
   unStar.onclick = onStarClicked;
   star.onclick = onStarClicked;
+
+  // Bind deleting action.
+  var onTrashClicked = function() {
+    var globalPostRef = firebase.database().ref('/posts/' + postId);
+    var userPostRef = firebase.database().ref('/user-posts/' + authorId + '/' + postId);
+    deletePost(globalPostRef, uid);
+    deletePost(userPostRef, uid);
+  };
+  if (trash) {
+    trash.onclick = onTrashClicked;
+  }
 
   return postElement;
 }
@@ -267,6 +298,7 @@ function deleteComment(postElement, id) {
   comment.parentElement.removeChild(comment);
 }
 
+
 /**
  * Starts listening for new posts and populates posts lists.
  */
@@ -280,12 +312,12 @@ function startDatabaseQueries() {
   // [END recent_posts_query]
   var userPostsRef = firebase.database().ref('user-posts/' + myUserId);
 
-  var fetchPosts = function(postsRef, sectionElement) {
+  var fetchPosts = function(postsRef, sectionElement, commentsEnabled) {
     postsRef.on('child_added', function(data) {
       var author = data.val().author || 'Anonymous';
       var containerElement = sectionElement.getElementsByClassName('posts-container')[0];
       containerElement.insertBefore(
-        createPostElement(data.key, data.val().title, data.val().body, author, data.val().uid, data.val().authorPic),
+        createPostElement(data.key, data.val().title, data.val().body, author, data.val().uid, data.val().authorPic, commentsEnabled),
         containerElement.firstChild);
     });
     postsRef.on('child_changed', function(data) {
@@ -304,9 +336,9 @@ function startDatabaseQueries() {
   };
 
   // Fetching and displaying all posts of each sections.
-  fetchPosts(topUserPostsRef, topUserPostsSection);
-  fetchPosts(recentPostsRef, recentPostsSection);  // givePostsSection
-  fetchPosts(userPostsRef, userPostsSection);
+  fetchPosts(topUserPostsRef, topUserPostsSection, false);
+  fetchPosts(recentPostsRef, recentPostsSection, false);  // givePostsSection
+  fetchPosts(userPostsRef, userPostsSection, true);
 
   // Keep track of all Firebase refs we are listening to.
   listeningFirebaseRefs.push(topUserPostsRef);
