@@ -1,4 +1,6 @@
+<p align="center">
 <img src="public/logo.png" width="300">
+</p>
 
 Mutual Aid Giving is a mobile-friendly web application, building off from one of Firebase's demo projects, for communities to create an open asking/giving platform. It's still in development for more features, including an in-app messaging system, map to display general location, tagging for posts, and more. This current version is minimally functional; users can login anonymously or with Google OAuth, create and respond to posts.
 
