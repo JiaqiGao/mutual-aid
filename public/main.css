@@ -222,7 +222,7 @@ h3 {
 }
 #page-add .mdl-cell {
     width: auto;
-    min-width: 300px;
+    min-width: 350px;
 }
 #newPictureContainer {
     margin: 0;
@@ -246,6 +246,12 @@ h3 {
 }
 .comments-container .username {
     line-height: 25px;
+}
+
+.intro {
+    display: inline-block;
+    margin: 10px;
+    background-color: yellow;
 }
 
 /* Post */
