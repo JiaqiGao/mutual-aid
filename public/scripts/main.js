@@ -128,7 +128,7 @@ function postTemplate(postId, isUser) {
           '<form class="add-comment" action="#">' +
             '<div class="mdl-textfield mdl-js-textfield">' +
               '<input class="mdl-textfield__input new-comment" type="text">' +
-              '<label class="mdl-textfield__label">Respond to post...</label>' +
+              '<label class="mdl-textfield__label">Respond to post with your contact information...</label>' +
             '</div>' +
           '</form>' +
         '</div>' +
