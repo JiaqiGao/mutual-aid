@@ -27,19 +27,26 @@ var signOutButton = document.getElementById('sign-out-button');
 var splashPage = document.getElementById('page-splash');
 var addPost = document.getElementById('add-post');
 var addButton = document.getElementById('add');
+var addButtonMobile  = $('#add');
 var givesPostsSection = document.getElementById('gives-posts-list');
 var asksPostsSection = document.getElementById('asks-posts-list');
 var userPostsSection = document.getElementById('user-posts-list');
 var topUserPostsSection = document.getElementById('top-user-posts-list');
 
-var givesMenuButton = document.getElementById('menu-gives');
-var asksMenuButton = document.getElementById('menu-asks');
+var givesMenuButtonMobile = $('#menu-gives');
+var asksMenuButtonMobile = $('#menu-asks');
+var givesMenuButton  = document.getElementById('menu-gives');
+var asksMenuButton  = document.getElementById('menu-asks');
 
-var myPostsMenuButton = document.getElementById('menu-my-posts');
-// var myTopPostsMenuButton = document.getElementById('menu-my-top-posts');
+var myPostsMenuButtonMobile  = $('#menu-my-posts');
+var myPostsMenuButton  = document.getElementById('menu-my-posts');
 
-var giveToggle = document.getElementById('give-toggle');
-var askToggle = document.getElementById('ask-toggle');
+var giveToggle  = document.getElementById('give-toggle');
+var askToggle  = document.getElementById('ask-toggle');
+var giveToggleMobile  = $('#give-toggle');
+var askToggleMobile  = $('#ask-toggle');
+
+var intro = document.getElementById('intro');
 
 var listeningFirebaseRefs = [];
 
@@ -228,7 +235,7 @@ function createPostElement(postId, title, text, author, authorId, authorPic, com
     deletePost(userPostRef);
   };
   if (trash) {
-    trash.onclick = onTrashClicked;
+    trashMobile.on('click touchstart', function() { onTrashClicked;});
   }
 
   return postElement;
@@ -477,7 +484,6 @@ function newPostForCurrentUser(title, text, askgive) {
 function showSection(sectionElement, buttonElement) {
   givesPostsSection.style.display = 'none';
   asksPostsSection.style.display = 'none';
-
   userPostsSection.style.display = 'none';
   topUserPostsSection.style.display = 'none';
   addPost.style.display = 'none';
@@ -491,6 +497,12 @@ function showSection(sectionElement, buttonElement) {
   }
   if (buttonElement) {
     buttonElement.classList.add('is-active');
+  }
+
+  if (sectionElement.id == 'add-post' || sectionElement.id == 'user-posts-list') {
+    intro.style.display = 'none';
+  } else {
+    intro.style.display = 'block';
   }
 }
 
@@ -521,7 +533,7 @@ window.addEventListener('load', function() {
 
   var askgive = 'give';
 
-  giveToggle.onclick = function() {
+  giveToggleMobile.on('click touchstart', function() {
     if (giveToggle.classList.contains('mdl-button--disabled') == true) {
       askgive = 'give';
       giveToggle.classList.remove('mdl-button--disabled');
@@ -529,15 +541,16 @@ window.addEventListener('load', function() {
       askToggle.classList.add('mdl-button--disabled');
     }
       
-  }
-  askToggle.onclick = function() {
+  });
+
+  askToggleMobile.on('click touchstart', function() {
     if (askToggle.classList.contains('mdl-button--disabled') == true) {
       askgive = 'ask';
       askToggle.classList.remove('mdl-button--disabled');
       askToggle.classList.add('toggle-on');
       giveToggle.classList.add('mdl-button--disabled');
     }
-  }
+  });
 
   // Saves message on form submit.
   messageForm.onsubmit = function(e) {
@@ -554,23 +567,27 @@ window.addEventListener('load', function() {
   };
 
   // Bind menu buttons.
-  givesMenuButton.onclick = function() {
+  givesMenuButtonMobile.on('click touchstart', function() {
     showSection(givesPostsSection, givesMenuButton);
-  };
-  asksMenuButton.onclick = function() {
+  });
+  asksMenuButtonMobile.on('click touchstart', function() {
     showSection(asksPostsSection, asksMenuButton);
-  };
-  myPostsMenuButton.onclick = function() {
+  });
+  myPostsMenuButtonMobile.on('click touchstart', function() {
     showSection(userPostsSection, myPostsMenuButton);
-  };
-  // myTopPostsMenuButton.onclick = function() {
+  });
+  // myTopPostsMenuButtonMobile.on('click touchstart', function() {
   //   showSection(topUserPostsSection, myTopPostsMenuButton);
   // };
-  addButton.onclick = function() {
+  addButtonMobile.on('click touchstart', function() {
+    
     showSection(addPost);
     messageInput.value = '';
     titleInput.value = '';
-  };
-  givesMenuButton.onclick();
-  asksMenuButton.onclick();
+  });
+
+  showSection(givesPostsSection, givesMenuButton);
+  // givesMenuButton.onclick();
+  // asksMenuButton.onclick();
+
 }, false);
