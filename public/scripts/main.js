@@ -228,8 +228,11 @@ function createPostElement(postId, title, text, author, authorId, authorPic, com
     deletePost(globalPostRef);
     deletePost(userPostRef);
   };
+
   if (trash) {
-    trash.on('click touchstart', function() { onTrashClicked;});
+    // and I mean, jQuery is trash
+    var jqueryTrash = $(trash);
+    jqueryTrash.bind('click touchstart', onTrashClicked);
   }
 
   return postElement;
@@ -463,7 +466,6 @@ function newPostForCurrentUser(title, text, askgive) {
   return firebase.database().ref('/users/' + userId).once('value').then(function(snapshot) {
     var username = (snapshot.val() && snapshot.val().username) || 'Anonymous';
     // [START_EXCLUDE]
-    console.log(askgive);
     return writeNewPost(firebase.auth().currentUser.uid, username,
       firebase.auth().currentUser.photoURL,
       title, text, askgive);
@@ -493,6 +495,7 @@ function showSection(sectionElement, buttonElement) {
     buttonElement.addClass('is-active');
   }
 
+  // show intro if add-posts or user-posts section is not displayed
   if (sectionElement.id == 'add-post' || sectionElement.id == 'user-posts-list') {
     intro.style.display = 'none';
   } else {
@@ -548,7 +551,7 @@ window.addEventListener('load', function() {
     var title = titleInput.value;
     if (text && title) {
       newPostForCurrentUser(title, text, askgive).then(function() {
-        myPostsMenuButton.click();
+        showSection(userPostsSection, myPostsMenuButton);
       });
       messageInput.value = '';
       titleInput.value = '';
