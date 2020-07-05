@@ -20,31 +20,25 @@
 var messageForm = document.getElementById('message-form');
 var messageInput = document.getElementById('new-post-message');
 var titleInput = document.getElementById('new-post-title');
-var signInButton = document.getElementById('sign-in-button');
-var signInAnonButton = document.getElementById('sign-in-anon-button');
+var signInButton = $('#sign-in-button');
+var signInAnonButton = $('#sign-in-anon-button');
 
-var signOutButton = document.getElementById('sign-out-button');
+var signOutButton = $('#sign-out-button');
 var splashPage = document.getElementById('page-splash');
 var addPost = document.getElementById('add-post');
-var addButton = document.getElementById('add');
-var addButtonMobile  = $('#add');
+var addButton = $('#add');
 var givesPostsSection = document.getElementById('gives-posts-list');
 var asksPostsSection = document.getElementById('asks-posts-list');
 var userPostsSection = document.getElementById('user-posts-list');
 var topUserPostsSection = document.getElementById('top-user-posts-list');
 
-var givesMenuButtonMobile = $('#menu-gives');
-var asksMenuButtonMobile = $('#menu-asks');
-var givesMenuButton  = document.getElementById('menu-gives');
-var asksMenuButton  = document.getElementById('menu-asks');
+var givesMenuButton = $('#menu-gives');
+var asksMenuButton = $('#menu-asks');
 
-var myPostsMenuButtonMobile  = $('#menu-my-posts');
-var myPostsMenuButton  = document.getElementById('menu-my-posts');
+var myPostsMenuButton = $('#menu-my-posts');
 
-var giveToggle  = document.getElementById('give-toggle');
-var askToggle  = document.getElementById('ask-toggle');
-var giveToggleMobile  = $('#give-toggle');
-var askToggleMobile  = $('#ask-toggle');
+var giveToggle = $('#give-toggle');
+var askToggle = $('#ask-toggle');
 
 var intro = document.getElementById('intro');
 
@@ -135,7 +129,7 @@ function postTemplate(postId, isUser) {
           '<form class="add-comment" action="#">' +
             '<div class="mdl-textfield mdl-js-textfield">' +
               '<input class="mdl-textfield__input new-comment" type="text">' +
-              '<label class="mdl-textfield__label">Respond to this post...</label>' +
+              '<label class="mdl-textfield__label">Respond to this post..</label>' +
             '</div>' +
           '</form>' +
         '</div>' +
@@ -235,7 +229,7 @@ function createPostElement(postId, title, text, author, authorId, authorPic, com
     deletePost(userPostRef);
   };
   if (trash) {
-    trashMobile.on('click touchstart', function() { onTrashClicked;});
+    trash.on('click touchstart', function() { onTrashClicked;});
   }
 
   return postElement;
@@ -277,7 +271,7 @@ function updateStarCount(postElement, nbStart) {
  */
 function addCommentElement(postElement, id, text, author) {
   var comment = document.createElement('div');
-  comment.classList.add('comment-' + id);
+  comment.addClass('comment-' + id);
   comment.innerHTML = '<span class="username"></span><span class="comment"></span>';
   comment.getElementsByClassName('comment')[0].innerText = text;
   comment.getElementsByClassName('username')[0].innerText = author || 'Anonymous';
@@ -487,16 +481,16 @@ function showSection(sectionElement, buttonElement) {
   userPostsSection.style.display = 'none';
   topUserPostsSection.style.display = 'none';
   addPost.style.display = 'none';
-  givesMenuButton.classList.remove('is-active');
-  asksMenuButton.classList.remove('is-active');
-  myPostsMenuButton.classList.remove('is-active');
-  // myTopPostsMenuButton.classList.remove('is-active');
+  givesMenuButton.removeClass('is-active');
+  asksMenuButton.removeClass('is-active');
+  myPostsMenuButton.removeClass('is-active');
+  // myTopPostsMenuButton.removeClass('is-active');
 
   if (sectionElement) {
     sectionElement.style.display = 'block';
   }
   if (buttonElement) {
-    buttonElement.classList.add('is-active');
+    buttonElement.addClass('is-active');
   }
 
   if (sectionElement.id == 'add-post' || sectionElement.id == 'user-posts-list') {
@@ -509,22 +503,22 @@ function showSection(sectionElement, buttonElement) {
 // Bindings on load.
 window.addEventListener('load', function() {
   // Bind Sign in button.
-  signInButton.addEventListener('click', function() {
+  signInButton.on('click touchstart', function() {
     var provider = new firebase.auth.GoogleAuthProvider();
     firebase.auth().signInWithPopup(provider);
   });
 
-  signInAnonButton.addEventListener('click', function() {
+  signInAnonButton.on('click touchstart', function() {
     firebase.auth().signInAnonymously().catch(function(error) {
       // Handle Errors here.
       var errorCode = error.code;
       var errorMessage = error.message;
-      // ...
+      // ..
     });
   });
 
   // Bind Sign out button.
-  signOutButton.addEventListener('click', function() {
+  signOutButton.on('click touchstart', function() {
     firebase.auth().signOut();
   });
 
@@ -533,23 +527,18 @@ window.addEventListener('load', function() {
 
   var askgive = 'give';
 
-  giveToggleMobile.on('click touchstart', function() {
-    if (giveToggle.classList.contains('mdl-button--disabled') == true) {
-      askgive = 'give';
-      giveToggle.classList.remove('mdl-button--disabled');
-      giveToggle.classList.add('toggle-on');
-      askToggle.classList.add('mdl-button--disabled');
-    }
-      
+  giveToggle.on('click touchstart', function() {
+    askgive = 'give';
+    giveToggle.removeClass('mdl-button--disabled');
+    giveToggle.addClass('toggle-on');
+    askToggle.addClass('mdl-button--disabled');   
   });
 
-  askToggleMobile.on('click touchstart', function() {
-    if (askToggle.classList.contains('mdl-button--disabled') == true) {
-      askgive = 'ask';
-      askToggle.classList.remove('mdl-button--disabled');
-      askToggle.classList.add('toggle-on');
-      giveToggle.classList.add('mdl-button--disabled');
-    }
+  askToggle.on('click touchstart', function() {
+    askgive = 'ask';
+    askToggle.removeClass('mdl-button--disabled');
+    askToggle.addClass('toggle-on');
+    giveToggle.addClass('mdl-button--disabled');
   });
 
   // Saves message on form submit.
@@ -567,19 +556,19 @@ window.addEventListener('load', function() {
   };
 
   // Bind menu buttons.
-  givesMenuButtonMobile.on('click touchstart', function() {
+  givesMenuButton.on('click touchstart', function() {
     showSection(givesPostsSection, givesMenuButton);
   });
-  asksMenuButtonMobile.on('click touchstart', function() {
+  asksMenuButton.on('click touchstart', function() {
     showSection(asksPostsSection, asksMenuButton);
   });
-  myPostsMenuButtonMobile.on('click touchstart', function() {
+  myPostsMenuButton.on('click touchstart', function() {
     showSection(userPostsSection, myPostsMenuButton);
   });
-  // myTopPostsMenuButtonMobile.on('click touchstart', function() {
+  // myTopPostsMenuButton.on('click touchstart', function() {
   //   showSection(topUserPostsSection, myTopPostsMenuButton);
   // };
-  addButtonMobile.on('click touchstart', function() {
+  addButton.on('click touchstart', function() {
     
     showSection(addPost);
     messageInput.value = '';
